@@ -73,7 +73,6 @@ app.post('/registrar-paciente', async (req, res) => {
 });
 
 // Endpoint para obtener ficha médica
-// Endpoint SIMPLIFICADO para ficha médica
 app.get('/ficha-medica/:uuid', async (req, res) => {
     try {
         const { uuid } = req.params;
