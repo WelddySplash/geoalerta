@@ -84,7 +84,7 @@
 
             try {
                 // Llamar a tu API de Express
-                const response = await fetch(`http://localhost:3000/ficha-medica/${id}`);
+                const response = await fetch(`https://geoalerta.vercel.app/ficha-medica/${id}`);
                 const data = await response.json();
 
                 if (!response.ok || !data) {
