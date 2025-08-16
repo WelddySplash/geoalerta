@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, '../frontend'))); // Ruta absoluta
 
 // Ruta para la raíz
 app.get('/', (req,res) => {
-    console.log("yo")
+    console.log()
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 // Conexión a Neon
@@ -134,7 +134,7 @@ app.put('/actualizar-link/:id', async (req, res) => {
         
         // 1. Generar nuevos valores
         const newUuid = uuidv4();
-        const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+        const baseUrl = process.env.BASE_URL || 'https://geoalerta.vercel.app';
         const newFichaUrl = `${baseUrl}/ficha-medica.html?uuid=${newUuid}`;
 
         // 2. Actualizar DB
