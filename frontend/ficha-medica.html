@@ -311,6 +311,7 @@
         // Mostrar datos en la interfaz
         document.getElementById('patientName').textContent = patient.nombre || 'No registrado';
         document.getElementById('patientId').textContent = patient.uuid || '--';
+        console.log(patient.fechanac);
         document.getElementById('birthDate').textContent = fechaFormateadaDate(patient.fechanac);
         document.getElementById('gender').textContent = patient.sexo || 'No especificado';
         document.getElementById('bloodType').textContent = patient.tipo_sangre || 'No especificado';
