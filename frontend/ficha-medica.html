@@ -250,10 +250,15 @@
             const params = new URLSearchParams(window.location.search);
             return params.get('id');
         }
-        
+        function formatearFechaComoTexto(fechaString) {
+    const parteFecha = fechaString.split('T')[0];
+    const [anio, mes, dia] = parteFecha.split('-');
+    
+    return `${dia}/${mes}/${anio}`; // Formato DD/MM/AAAA
+}
         // Formatear fecha
         function formatDate(dateString) {
-            if (dateString) return 'No registrada';
+            if (!dateString) return 'No registrada';
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString('es-ES', options);
         }
@@ -303,7 +308,7 @@
         // Mostrar datos en la interfaz
         document.getElementById('patientName').textContent = patient.nombre || 'No registrado';
         document.getElementById('patientId').textContent = patient.uuid || '--';
-        document.getElementById('birthDate').textContent = formatDate(patient.fechaNac);
+        document.getElementById('birthDate').textContent = formatearFechaComoTexto(patient.fechaNac);
         document.getElementById('gender').textContent = patient.sexo || 'No especificado';
         document.getElementById('bloodType').textContent = patient.tipo_sangre || 'No especificado';
         document.getElementById('nss').textContent = patient.nss || 'No registrado';
