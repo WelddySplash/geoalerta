@@ -6,6 +6,7 @@ const { Pool } = require('pg');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static('../frontend')); // Sirve archivos estáticos desde la carpeta frontend
 
 // Conexión a Neon
 const pool = new Pool({
