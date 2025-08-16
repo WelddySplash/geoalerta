@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Médica</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .ficha-section {
+            margin-bottom: 20px;
+        }
+        .ficha-section h2 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        .campo {
+            margin-bottom: 10px;
+        }
+        .campo strong {
+            display: inline-block;
+            width: 150px;
+            color: #7f8c8d;
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        #cargando {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Ficha Médica</h1>
+        
+        <!-- Formulario para buscar por ID -->
+        <div class="ficha-section">
+            <h2>Buscar Ficha</h2>
+            <input type="text" id="idFicha" placeholder="Ingresa el ID de la ficha" style="width: 300px; padding: 8px;">
+            <button onclick="cargarFicha()">Buscar</button>
+        </div>
+
+        <!-- Espacio para mostrar resultados -->
+        <div id="cargando" style="display: none;">Cargando...</div>
+        <div id="ficha-data"></div>
+    </div>
+
+    <script>
+        async function cargarFicha() {
+            const id = document.getElementById('idFicha').value.trim();
+            if (!id) {
+                alert("Por favor ingresa un ID válido.");
+                return;
+            }
+
+            const divCargando = document.getElementById('cargando');
+            const divFicha = document.getElementById('ficha-data');
+
+            // Limpiar y mostrar carga
+            divFicha.innerHTML = '';
+            divCargando.style.display = 'block';
+
+            try {
+                // Llamar a tu API de Express
+                const response = await fetch(`http://localhost:3000/ficha-medica/${id}`);
+                const data = await response.json();
+
+                if (!response.ok || !data) {
+                    throw new Error(data?.error || "Ficha no encontrada");
+                }
+
+                // Mostrar los datos
+                divFicha.innerHTML = `
+                    <div class="ficha-section">
+                        <h2>Datos del Paciente</h2>
+                        <div class="campo"><strong>ID:</strong> ${data.id}</div>
+                        <div class="campo"><strong>Nombre:</strong> ${data.nombre || 'N/A'}</div>
+                        <div class="campo"><strong>Edad:</strong> ${data.edad || 'N/A'}</div>
+                    </div>
+                    <div class="ficha-section">
+                        <h2>Diagnóstico</h2>
+                        <div class="campo"><strong>Fecha:</strong> ${data.fecha_diagnostico || 'N/A'}</div>
+                        <div class="campo"><strong>Diagnóstico:</strong> ${data.diagnostico || 'N/A'}</div>
+                        <div class="campo"><strong>Tratamiento:</strong> ${data.tratamiento || 'N/A'}</div>
+                    </div>
+                `;
+            } catch (error) {
+                divFicha.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            } finally {
+                divCargando.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
