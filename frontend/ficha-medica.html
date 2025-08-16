@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
+            --primary-color: #c23935;
             --danger-color: #e74c3c;
             --success-color: #2ecc71;
             --text-color: #333;
@@ -311,7 +311,6 @@
         // Mostrar datos en la interfaz
         document.getElementById('patientName').textContent = patient.nombre || 'No registrado';
         document.getElementById('patientId').textContent = patient.uuid || '--';
-        console.log(patient.fechanac);
         document.getElementById('birthDate').textContent = fechaFormateadaDate(patient.fechanac);
         document.getElementById('gender').textContent = patient.sexo || 'No especificado';
         document.getElementById('bloodType').textContent = patient.tipo_sangre || 'No especificado';
