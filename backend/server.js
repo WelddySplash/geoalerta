@@ -1,14 +1,21 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path'); // Añade esto al inicio
 const cors = require('cors');
 const { Pool } = require('pg');
 
 const app = express();
+
 app.use(cors());
+
+// Middlewares cruciales (colócalos en este orden)
 app.use(express.json());
-app.use(express.static('../frontend')); // Sirve archivos estáticos desde la carpeta frontend
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+app.use(express.static(path.join(__dirname, '../frontend'))); // Ruta absoluta
+
+// Ruta para la raíz
+app.get('/', (req,res) => {
+    console.log("yo")
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 // Conexión a Neon
 const pool = new Pool({
