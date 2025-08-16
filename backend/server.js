@@ -27,7 +27,7 @@ const pool = new Pool({
 app.post('/registrar-paciente', async (req, res) => {
     try {
         const uuid = uuidv4(); // Generar UUID único
-        const fichaUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/ficha-medica.html?uuid=${uuid}`;
+        const fichaUrl = `${process.env.BASE_URL || 'https://geoalerta.vercel.app'}/ficha-medica.html?uuid=${uuid}`;
         
         const query = `
             INSERT INTO usuarios (

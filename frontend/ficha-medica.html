@@ -298,6 +298,8 @@
             throw new Error(patient.error || 'Error al cargar los datos');
         }
 
+        console.log(patient)
+
         // Mostrar datos en la interfaz
         document.getElementById('patientName').textContent = patient.nombre || 'No registrado';
         document.getElementById('patientId').textContent = patient.uuid || '--';
