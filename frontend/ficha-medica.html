@@ -253,7 +253,7 @@
         
         // Formatear fecha
         function formatDate(dateString) {
-            if (!dateString) return 'No registrada';
+            if (dateString) return 'No registrada';
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString('es-ES', options);
         }
@@ -337,6 +337,10 @@
 
         if (patient.contacto2n || patient.contacto2) {
             contactsContainer.innerHTML += createContactElement(patient.contacto2n, patient.contacto2);
+        }
+
+        if (patient.contacto3n || patient.contacto3) {
+            contactsContainer.innerHTML += createContactElement(patient.contacto3n, patient.contacto3);
         }
 
         loadingElement.style.display = 'none';
