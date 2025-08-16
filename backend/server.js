@@ -73,23 +73,33 @@ app.post('/registrar-paciente', async (req, res) => {
 });
 
 // Endpoint para obtener ficha médica
-async function obtenerFichaMedica(id) {
+// Endpoint SIMPLIFICADO para ficha médica
+app.get('/ficha-medica/:uuid', async (req, res) => {
     try {
-        const query = 'SELECT * FROM fichas_medicas WHERE id = $1'; // Ajusta el nombre de la tabla
-        const result = await pool.query(query, [id]);
+        const { uuid } = req.params;
         
-        if (result.rows.length === 0) {
-            console.log("⚠️ No se encontró la ficha con ID:", id);
-            return null;
+        // Consulta DIRECTA a la base de datos
+        const { rows } = await pool.query(`
+            SELECT * FROM usuarios 
+            WHERE uuid = $1
+        `, [uuid]);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ 
+                error: 'Paciente no encontrado' 
+            });
         }
+        // Devuelve TODOS los datos sin filtrar
+        res.status(200).json(rows[0]);
         
-        return result.rows[0]; // Retorna el primer registro encontrado
-
-    } catch (error) {
-        console.error("❌ Error en la consulta PostgreSQL:", error.message);
-        return null;
+    } catch (err) {
+        console.error('Error en ficha médica:', err);
+        res.status(500).json({ 
+            error: 'Error de servidor',
+            details: err.message 
+        });
     }
-}
+});
 
 // Endpoint para obtener todos los usuarios
 app.get('/usuarios', async (req, res) => {
