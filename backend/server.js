@@ -177,6 +177,129 @@ app.put('/actualizar-link/:id', async (req, res) => {
         });
     }
 });
+
+// Endpoint para solicitar ayuda
+app.post('/solicitar-ayuda', async (req, res) => {
+    try {
+        const { uuid, latitud, longitud } = req.body;
+
+        // 1. Verificar que el UUID existe y obtener el ID del usuario
+        const userQuery = await pool.query(
+            'SELECT id FROM usuarios WHERE uuid = $1', 
+            [uuid]
+        );
+
+        if (userQuery.rows.length === 0) {
+            return res.status(404).json({ 
+                success: false,
+                error: 'Paciente no encontrado' 
+            });
+        }
+
+        const usuarioId = userQuery.rows[0].id;
+
+        // 2. Insertar la solicitud de ayuda
+        const insertQuery = `
+            INSERT INTO solicitudes_ayuda (
+                usuario_id, uuid, latitud, longitud
+            ) VALUES ($1, $2, $3, $4)
+            RETURNING id, timestamp
+        `;
+
+        const { rows } = await pool.query(insertQuery, [
+            usuarioId,
+            uuid,
+            latitud,
+            longitud
+        ]);
+
+        // 3. Obtener información del paciente y contactos para notificación
+        const pacienteQuery = await pool.query(`
+            SELECT nombre, contacto1, contacto2, contacto3 
+            FROM usuarios 
+            WHERE id = $1
+        `, [usuarioId]);
+
+        const paciente = pacienteQuery.rows[0];
+
+        // 4. Responder con éxito
+        res.json({ 
+            success: true,
+            solicitud_id: rows[0].id,
+            timestamp: rows[0].timestamp,
+            paciente: {
+                nombre: paciente.nombre,
+                contactos: [
+                    paciente.contacto1,
+                    paciente.contacto2,
+                    paciente.contacto3
+                ].filter(Boolean) // Filtrar contactos vacíos
+            },
+            ubicacion: { latitud, longitud },
+            mapa_url: `https://www.google.com/maps?q=${latitud},${longitud}`
+        });
+
+    } catch (err) {
+        console.error('Error en solicitud de ayuda:', err);
+        res.status(500).json({ 
+            success: false,
+            error: err.message 
+        });
+    }
+});
+
+// Endpoint para obtener solicitudes de ayuda
+app.get('/solicitudes-ayuda', async (req, res) => {
+    try {
+        const { limit = 50, atendido } = req.query;
+        
+        let query = `
+            SELECT 
+                sa.id, sa.timestamp, sa.latitud, sa.longitud, sa.atendido,
+                u.id as usuario_id, u.nombre, u.contacto1, u.contacto2, u.contacto3
+            FROM solicitudes_ayuda sa
+            JOIN usuarios u ON sa.usuario_id = u.id
+            ORDER BY sa.timestamp DESC
+            LIMIT $1
+        `;
+        
+        let params = [limit];
+        
+        if (atendido !== undefined) {
+            query = query.replace('LIMIT $1', 'WHERE sa.atendido = $2 LIMIT $1');
+            params.push(atendido === 'true');
+        }
+        
+        const { rows } = await pool.query(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error obteniendo solicitudes:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+// Endpoint para marcar solicitud como atendida
+app.put('/solicitudes-ayuda/:id/atender', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { notas } = req.body;
+        
+        const { rows } = await pool.query(`
+            UPDATE solicitudes_ayuda 
+            SET atendido = TRUE, notas = $2
+            WHERE id = $1
+            RETURNING *
+        `, [id, notas]);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Solicitud no encontrada' });
+        }
+        
+        res.json(rows[0]);
+    } catch (err) {
+        console.error('Error actualizando solicitud:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
