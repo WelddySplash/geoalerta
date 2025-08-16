@@ -250,11 +250,9 @@
             const params = new URLSearchParams(window.location.search);
             return params.get('id');
         }
-        function formatearFechaComoTexto(fechaString) {
-    const parteFecha = fechaString.split('T')[0];
-    const [anio, mes, dia] = parteFecha.split('-');
-    
-    return `${dia}/${mes}/${anio}`; // Formato DD/MM/AAAA
+        
+        function fechaFormateadaRegex(fechaString) {
+    return fechaString.replace(/T.*/, ''); // Elimina todo desde la T
 }
         // Formatear fecha
         function formatDate(dateString) {
@@ -308,7 +306,7 @@
         // Mostrar datos en la interfaz
         document.getElementById('patientName').textContent = patient.nombre || 'No registrado';
         document.getElementById('patientId').textContent = patient.uuid || '--';
-        document.getElementById('birthDate').textContent = formatearFechaComoTexto(patient.fechaNac);
+        document.getElementById('birthDate').textContent = fechaFormateadaRegex(patient.fechaNac);
         document.getElementById('gender').textContent = patient.sexo || 'No especificado';
         document.getElementById('bloodType').textContent = patient.tipo_sangre || 'No especificado';
         document.getElementById('nss').textContent = patient.nss || 'No registrado';
